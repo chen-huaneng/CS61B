@@ -56,7 +56,7 @@ public class ArrayDeque<T> {
 
     public T removeFirst() {
         if (sizeOfArray >= lowSize && (float) size / sizeOfArray <= 0.25) {
-            resize(sizeOfArray / factor);
+            resize(sizeOfArray / (factor / 2));
         }
         nextFirst = addOne(nextFirst);
         size -= 1;
@@ -65,7 +65,7 @@ public class ArrayDeque<T> {
 
     public T removeLast() {
         if (sizeOfArray >= lowSize && (float) size / sizeOfArray <= 0.25) {
-            resize(sizeOfArray / factor);
+            resize(sizeOfArray / (factor / 2));
         }
         nextLast = minusOne(nextLast);
         size -= 1;
@@ -73,22 +73,26 @@ public class ArrayDeque<T> {
     }
 
     public T get(int index) {
-        if (index > size || index <= 0) {
+        if (index > size || index < 0) {
             return null;
         }
         return items[index];
     }
 
-    /** Resize the array if the size of array is over the total length
-     * or if the usage factor is lower than 25% and the total length of array is less than 16.*/
+    /** Resize the array if the size of array is over the total length.
+     * Or resize the array if the usage factor is lower than 25%
+     * and the total length of array is less than 16.*/
     private void resize(int newLength) {
         T[] temp = (T[]) new Object[newLength];
         int pos = addOne(nextFirst);
-        for (int i = 0; i < size; ++i) {
-            temp[pos] = items[pos];
+        for (int i = 1; i <= size; ++i) {
+            temp[i] = items[pos];
             pos = addOne(pos);
         }
+        nextFirst = 0;
+        nextLast = size + 1;
         sizeOfArray = newLength;
         items = temp;
     }
+
 }
