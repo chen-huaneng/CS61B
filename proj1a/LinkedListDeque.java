@@ -54,46 +54,55 @@ public class LinkedListDeque<T> {
     }
 
     public T removeFirst() {
+        if (size <= 0) {
+            return null;
+        }
         var temp = sentinel.next.next;
         T item = sentinel.next.item;
         sentinel.next = temp;
         temp.prev = sentinel;
+        size -= 1;
         return item;
     }
 
     public T removeLast() {
+        if (size <= 0) {
+            return null;
+        }
         var temp = sentinel.prev.prev;
         T item = sentinel.prev.item;
         sentinel.prev = temp;
         temp.next = sentinel;
+        size -= 1;
         return item;
     }
 
     public T get(int index) {
-        if (index > size || index <= 0) {
+        if (size <= 0 || index > size || index < 0) {
             return null;
         }
         var temp = sentinel;
-        for (int i = 0; i < index; ++i) {
+        for (int i = 0; i <= index; ++i) {
             temp = temp.next;
         }
         return temp.item;
     }
 
-    /** Same as get, but recursive.
+    /**
+     * Same as get, but recursive.
      *
      * @param index the position of item
      * @return the item in the index
      */
     public T getRecursive(int index) {
-        if (index > size || index <= 0) {
+        if (size <= 0 || index > size || index < 0) {
             return null;
         }
         return getNode(index).item;
     }
 
     private Node<T> getNode(int index) {
-        if (index == 1) {
+        if (index == 0) {
             return sentinel.next;
         }
         return getNode(index - 1).next;

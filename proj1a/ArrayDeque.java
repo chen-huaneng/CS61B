@@ -1,37 +1,45 @@
 public class ArrayDeque<T> {
     private int size;
-    private final int factor = 4;
+    private final int lowSize = 16;
     private int nextFirst;
-    private final int lowsize = 16;
     private int nextLast;
     private int sizeOfArray = 8;
+    private final int factor = 4;
     private T[] items = (T[]) new Object[sizeOfArray];
     public ArrayDeque() {
         size = 0;
-        nextFirst = 0;
-        nextLast = sizeOfArray - 1;
+        nextFirst = 4;
+        nextLast = 5;
     }
 
     public void addFirst(T item) {
-        if ((nextFirst + sizeOfArray) % sizeOfArray == nextLast) {
-            resize();
+        if (minusOne(nextFirst) == nextLast) {
+            resize(sizeOfArray * factor);
         }
         items[nextFirst] = item;
-        nextFirst = (nextFirst - 1 + sizeOfArray) % sizeOfArray;
+        nextFirst = minusOne(nextFirst);
         size += 1;
+    }
+
+    private int minusOne(int current) {
+        return (current - 1 + sizeOfArray) % sizeOfArray;
     }
 
     public void addLast(T item) {
-        if ((nextFirst + sizeOfArray) % sizeOfArray == nextLast) {
-            resize();
+        if (nextLast == minusOne(nextFirst)) {
+            resize(sizeOfArray * factor);
         }
         items[nextLast] = item;
-        nextLast = (nextLast + 1) % sizeOfArray;
+        nextLast = addOne(nextLast);
         size += 1;
     }
 
+    private int addOne(int current) {
+        return (current + 1) % sizeOfArray;
+    }
+
     public boolean isEmpty() {
-        return (nextFirst + sizeOfArray - 1) % sizeOfArray == nextLast;
+        return size == 0;
     }
 
     public int size() {
@@ -39,19 +47,27 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        for (int i = nextFirst - 1; i < size; i = (i + 1) % sizeOfArray) {
-            System.out.print(items[i] + " ");
+        int pos = addOne(nextFirst);
+        for (int i = 0; i < size; ++i) {
+            System.out.print(items[pos] + " ");
+            pos = addOne(pos);
         }
     }
 
     public T removeFirst() {
-        nextFirst = (nextFirst + 1) % sizeOfArray;
+        if (sizeOfArray >= lowSize && (float) size / sizeOfArray <= 0.25) {
+            resize(sizeOfArray / factor);
+        }
+        nextFirst = addOne(nextFirst);
         size -= 1;
         return items[nextFirst];
     }
 
     public T removeLast() {
-        nextLast = (nextLast - 1 + sizeOfArray) % sizeOfArray;
+        if (sizeOfArray >= lowSize && (float) size / sizeOfArray <= 0.25) {
+            resize(sizeOfArray / factor);
+        }
+        nextLast = minusOne(nextLast);
         size -= 1;
         return items[nextLast];
     }
@@ -65,18 +81,12 @@ public class ArrayDeque<T> {
 
     /** Resize the array if the size of array is over the total length
      * or if the usage factor is lower than 25% and the total length of array is less than 16.*/
-    private void resize() {
-        int newLength;
-        if (sizeOfArray >= lowsize && (float) size / sizeOfArray <= 0.25) {
-            newLength = sizeOfArray / factor;
-        } else if (size >= sizeOfArray) {
-            newLength = sizeOfArray * factor;
-        } else {
-            return;
-        }
+    private void resize(int newLength) {
         T[] temp = (T[]) new Object[newLength];
-        for (int i = (nextFirst + 1) % sizeOfArray; i < size; i = (i + 1) % sizeOfArray) {
-            temp[i] = items[i];
+        int pos = addOne(nextFirst);
+        for (int i = 0; i < size; ++i) {
+            temp[pos] = items[pos];
+            pos = addOne(pos);
         }
         sizeOfArray = newLength;
         items = temp;
