@@ -1,9 +1,6 @@
 //package <package name>;
 package synthesizer;
 
-import edu.princeton.cs.algs4.StdAudio;
-import synthesizer.BoundedQueue;
-
 //Make sure this class is public
 public class GuitarString {
     /** Constants. Do not change. In case you're curious, the keyword final means
